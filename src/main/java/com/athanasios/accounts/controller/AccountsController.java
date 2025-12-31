@@ -2,18 +2,20 @@ package com.athanasios.accounts.controller;
 
 
 import com.athanasios.accounts.constants.AccountConstants;
-import com.athanasios.accounts.dto.AccountsDto;
 import com.athanasios.accounts.dto.CustomerDto;
 import com.athanasios.accounts.dto.ResponseDto;
 import com.athanasios.accounts.service.AccountsService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "api/v1/accounts/",
                 produces = {MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class AccountsController {
 
     private AccountsService accountsService;
@@ -28,21 +30,21 @@ public class AccountsController {
     }
 
     @PostMapping()
-    public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
         accountsService.createAccount(customerDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                             .body(new ResponseDto(AccountConstants.STATUS_201, AccountConstants.MESSAGE_201));
     }
 
     @GetMapping()
-    public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam String mobileNumber) {
+    public ResponseEntity<CustomerDto> fetchAccountDetails(@Valid @RequestParam String mobileNumber) {
         CustomerDto customerDto = accountsService.fetchAccount(mobileNumber);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                             .body(customerDto);
     }
 
     @PutMapping()
-    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         boolean isAccountUpdated = accountsService.updateAccount(customerDto);
         if(isAccountUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
@@ -56,7 +58,7 @@ public class AccountsController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<ResponseDto> deleteAccount(@RequestParam("mobileNumber") String mobileNumber) {
+    public ResponseEntity<ResponseDto> deleteAccount(@Valid @RequestParam("mobileNumber") String mobileNumber) {
         boolean isAccountDeleted = accountsService.deleteAccount(mobileNumber);
         if (isAccountDeleted) {
             return ResponseEntity
