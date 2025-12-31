@@ -3,7 +3,7 @@ package com.athanasios.accounts.mapper;
 import com.athanasios.accounts.dto.CustomerDto;
 import com.athanasios.accounts.entity.Customer;
 
-public class CustommerMapper {
+public class CustomerMapper {
     public static CustomerDto mapToCustomerDto(Customer customer, CustomerDto customerDto) {
         customerDto.setName(customer.getName());
         customerDto.setEmail(customer.getEmail());

@@ -38,6 +38,20 @@ public class AccountsController {
     public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam String mobileNumber) {
         CustomerDto customerDto = accountsService.fetchAccount(mobileNumber);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(customerDto);
+                            .body(customerDto);
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
+        boolean isAccountUpdated = accountsService.updateAccount(customerDto);
+        if(isAccountUpdated) {
+            return ResponseEntity.status(HttpStatus.OK)
+                                .body(new ResponseDto(AccountConstants.STATUS_200,
+                                                        AccountConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                                .body(new ResponseDto(AccountConstants.STATUS_417,
+                                                       AccountConstants.MESSAGE_417_DELETE));
+        }
     }
 }

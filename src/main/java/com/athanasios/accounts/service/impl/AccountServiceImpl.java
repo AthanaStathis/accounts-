@@ -8,7 +8,7 @@ import com.athanasios.accounts.entity.Customer;
 import com.athanasios.accounts.exception.CustomerAlreadyExistsException;
 import com.athanasios.accounts.exception.ResourceNotFoundException;
 import com.athanasios.accounts.mapper.AccountsMapper;
-import com.athanasios.accounts.mapper.CustommerMapper;
+import com.athanasios.accounts.mapper.CustomerMapper;
 import com.athanasios.accounts.repository.AccountsRepository;
 import com.athanasios.accounts.repository.CustomerRepository;
 import com.athanasios.accounts.service.AccountsService;
@@ -30,7 +30,7 @@ public class AccountServiceImpl implements AccountsService {
 
     @Override
     public void createAccount(CustomerDto customerDto) {
-        Customer customer = CustommerMapper.mapToCustomer(customerDto, new Customer());
+        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
         Optional<Customer> optionalCustomer = customerRepository.findByMobileNumber(customer.getMobileNumber());
         if (optionalCustomer.isPresent()){
             throw new CustomerAlreadyExistsException("Customer already exists with given mobile number "
@@ -59,9 +59,39 @@ public class AccountServiceImpl implements AccountsService {
                                                                 "customerId",
                                                                 customer.getCustomerId().toString()));
 
-        CustomerDto customerDto = CustommerMapper.mapToCustomerDto(customer, new CustomerDto());
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
         customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
         return customerDto;
+    }
+
+    @Override
+    public boolean updateAccount(CustomerDto customerDto) {
+        boolean isAccountUpdated = false;
+        AccountsDto accountsDto = customerDto.getAccountsDto();
+        if (accountsDto != null) {
+            Accounts accounts = accountsRepository.findById(accountsDto.getAccountNumber())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(
+                                    "Account",
+                                    "accountNumber",
+                                    accountsDto.getAccountNumber().toString()));
+
+            AccountsMapper.mapToAccounts(accountsDto, accounts);
+            accounts = accountsRepository.save(accounts);
+
+            Long customerId = accounts.getCustomerId();
+            Customer customer = customerRepository.findById(customerId)
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(
+                                    "Customer",
+                                    "customerId",
+                                    customerId.toString()));
+
+            CustomerMapper.mapToCustomer(customerDto, customer);
+            customerRepository.save(customer);
+            isAccountUpdated = true;
+        }
+        return isAccountUpdated;
     }
 
     private Accounts createNewAccount(Customer customer) {
