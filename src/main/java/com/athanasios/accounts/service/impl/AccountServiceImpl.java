@@ -6,6 +6,8 @@ import com.athanasios.accounts.dto.CustomerDto;
 import com.athanasios.accounts.entity.Accounts;
 import com.athanasios.accounts.entity.Customer;
 import com.athanasios.accounts.exception.CustomerAlreadyExistsException;
+import com.athanasios.accounts.exception.ResourceNotFoundException;
+import com.athanasios.accounts.mapper.AccountsMapper;
 import com.athanasios.accounts.mapper.CustommerMapper;
 import com.athanasios.accounts.repository.AccountsRepository;
 import com.athanasios.accounts.repository.CustomerRepository;
@@ -41,9 +43,30 @@ public class AccountServiceImpl implements AccountsService {
         accountsRepository.save(createNewAccount(savedCustomer));
     }
 
+    @Override
+    public CustomerDto fetchAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber)
+                                                .orElseThrow(
+                                                        () -> new ResourceNotFoundException(
+                                                                "Customer",
+                                                                "mobileNumber",
+                                                                mobileNumber));
+
+        Accounts accounts = (Accounts) accountsRepository.findByCustomerId(customer.getCustomerId())
+                                                .orElseThrow(
+                                                        () -> new ResourceNotFoundException(
+                                                                "Account",
+                                                                "customerId",
+                                                                customer.getCustomerId().toString()));
+
+        CustomerDto customerDto = CustommerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
+        return customerDto;
+    }
+
     private Accounts createNewAccount(Customer customer) {
         Accounts newAccount = new Accounts();
-        newAccount.setCustomer_id(customer.getCustomerId());
+        newAccount.setCustomerId(customer.getCustomerId());
         long randomAccountNumber = 1000000000L + new Random().nextInt(900000000);
 
         newAccount.setCreatedBy("Anonymous");

@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 public class Accounts extends BaseEntity{
 
     @Column(name = "customer_id")
-    private Long customer_id;
+    private Long customerId;
 
     @Id
     @Column(name = "account_number")
@@ -23,19 +23,19 @@ public class Accounts extends BaseEntity{
     public Accounts() {
     }
 
-    public Accounts(Long customer_id, Long accountNumber, String accountType, String branchAddress) {
-        this.customer_id = customer_id;
+    public Accounts(Long customerId, Long accountNumber, String accountType, String branchAddress) {
+        this.customerId = customerId;
         this.accountNumber = accountNumber;
         this.accountType = accountType;
         this.branchAddress = branchAddress;
     }
 
-    public Long getCustomer_id() {
-        return customer_id;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer_id(Long customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     public Long getAccountNumber() {
@@ -65,7 +65,7 @@ public class Accounts extends BaseEntity{
     @Override
     public String toString() {
         return "Accounts{" +
-                "customer_id=" + customer_id +
+                "customerId=" + customerId +
                 ", accountNumber=" + accountNumber +
                 ", accountType='" + accountType + '\'' +
                 ", branchAddress='" + branchAddress + '\'' +
