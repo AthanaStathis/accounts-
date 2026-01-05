@@ -53,7 +53,7 @@ public class AccountsController {
         } else {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                                 .body(new ResponseDto(AccountConstants.STATUS_417,
-                                                       AccountConstants.MESSAGE_417_DELETE));
+                                                       AccountConstants.MESSAGE_417_UPDATE));
         }
     }
 
